@@ -6,8 +6,22 @@
     canvas {
         border: 1px #0dbaff dashed;
     }
+
+    button {
+        border-radius: 2px;
+        border: 1px solid #91b6e3;
+        outline: none;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    button:active {
+        border: 1px solid #5f9ae2;
+        background: #d6ecff;
+    }
 </style>
 <body>
+<div class="uiPanel"></div>
 <canvas id="canvas" width="1180" height="720"></canvas>
 
 <script src="lib/fabric.js"></script>
@@ -20,7 +34,8 @@ https://v8.dev/features/modules#mjs
 <script type="module" src="main.js"></script>
 
 <script>
-  window.canvas = new fabric.Canvas('canvas');
+  window.canvas = new fabric.Canvas('canvas', {
+  });
 
   canvas.add(new fabric.Rect({
     top : 100,

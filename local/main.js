@@ -4,6 +4,8 @@ import {
   addImageFileToCanvas,
 } from "./functions.js";
 
+import UserInterface from "./UserInterface.js";
+
 localforage.setDriver(localforage.INDEXEDDB);
 
 // Is it possible to save whole thing as html?
@@ -21,6 +23,8 @@ localforage.setDriver(localforage.INDEXEDDB);
 // next step will be to compress png blobs
 
 async function main() {
+  const userInterface = new UserInterface();
+
   const keys = await localforage.keys();
 
   console.log("localforage keys is: ", keys);
