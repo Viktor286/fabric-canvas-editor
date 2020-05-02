@@ -62,29 +62,6 @@ window.addEventListener(
 
 // Global functions for test
 
-// imageToBlob(canvas.getActiveObject()._element).then(blob => console.log(blob))
-function imageToBlob(HTMLImageElement) {
-  return new Promise((resolve) => {
-    // TODO: can we use fabric this.cacheCanvasEl to make the same thing?
-    // this.contextCache.drawImage(HTMLImageElement, 0, 0);
-    // this.cacheCanvasEl.toBlob
-    // context.clearRect(0, 0, context.canvas.width, context.canvas.height)
-    // this.contextCache.clearRect(0, 0, contextCache.canvas.width, contextCache.canvas.height);
-    // we can use fiber canvas class clearContext or clear
-    // getWidth, and getHeight
-    let temptCanvas = document.createElement("canvas");
-    temptCanvas.width = HTMLImageElement.width;
-    temptCanvas.height = HTMLImageElement.height;
-    let context = temptCanvas.getContext("2d");
-    context.drawImage(HTMLImageElement, 0, 0);
-    temptCanvas.toBlob((blob) => {
-      temptCanvas = undefined;
-      context = undefined;
-      resolve(blob);
-    });
-  });
-}
-
 function ejectCanvasToPage(canvasElement) {
   canvasElement.toBlob((blob) => {
     const imageObjectURL = window.URL.createObjectURL(blob);

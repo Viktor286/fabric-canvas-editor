@@ -65,6 +65,7 @@ export function addImageFileToCanvas(blobImageFile, options = {}) {
       size: blobImageFile.size,
       type: blobImageFile.type,
       blobUrlStore: imageObjectURL,
+      imageElement,
     };
 
     canvas.add(newFabricImage); // { HTMLImageElement|String(query selector) }, { options }
@@ -72,4 +73,69 @@ export function addImageFileToCanvas(blobImageFile, options = {}) {
     // Looks like we can't release this imageObjectURL since app will still use it
     // window.URL.revokeObjectURL(imageObjectURL);
   };
+}
+
+export function downloadFile(data, filename, type) {
+  const file = new Blob([data], { type: type });
+  const a = document.createElement("a");
+  const url = URL.createObjectURL(file);
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function () {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 0);
+}
+
+// imageToBlob(canvas.getActiveObject()._element).then(blob => console.log(blob))
+export function imageToBlob(HTMLImageElement) {
+  return new Promise((resolve) => {
+    // TODO: can we use fabric this.cacheCanvasEl to make the same thing?
+    // this.contextCache.drawImage(HTMLImageElement, 0, 0);
+    // this.cacheCanvasEl.toBlob
+    // context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+    // this.contextCache.clearRect(0, 0, contextCache.canvas.width, contextCache.canvas.height);
+    // we can use fiber canvas class clearContext or clear
+    // getWidth, and getHeight
+    let temptCanvas = document.createElement("canvas");
+    temptCanvas.width = HTMLImageElement.width;
+    temptCanvas.height = HTMLImageElement.height;
+    let context = temptCanvas.getContext("2d");
+    context.drawImage(HTMLImageElement, 0, 0);
+    temptCanvas.toBlob((blob) => {
+      temptCanvas = undefined;
+      context = undefined;
+      resolve(blob);
+    });
+  });
+}
+
+export async function downloadZip() {
+  // JSZip
+  // https://stuk.github.io/jszip/documentation/examples.html
+
+  // Read a zip file
+  // https://stuk.github.io/jszip/documentation/howto/read_zip.html
+
+  const zip = new JSZip();
+  const appStateBackupJSON = JSON.stringify(canvas);
+
+  zip.file("application.json", appStateBackupJSON);
+
+  const file = canvas.getActiveObject().file;
+  const testImageBlob = await imageToBlob(file.imageElement);
+  zip.file(`images/${file.hash}.png`, testImageBlob);
+
+  zip
+    .generateAsync({
+      type: "blob",
+      compression: "DEFLATE",
+      platform: "UNIX",
+    })
+    .then(function (content) {
+      console.log("downloadFile");
+      downloadFile(content, "screenflow-project.zip", "application/zip");
+    });
 }

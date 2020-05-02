@@ -1,3 +1,5 @@
+import { downloadFile, imageToBlob, downloadZip } from "./functions.js";
+
 export default class UserInterface {
   constructor() {
     this.uiPanelContainer = "div.uiPanel";
@@ -8,6 +10,18 @@ export default class UserInterface {
         active: true,
         class: "getObjects",
         handler: this.getObjects,
+      },
+      {
+        title: "Backup",
+        active: true,
+        class: "saveBackup",
+        handler: this.saveBackup,
+      },
+      {
+        title: "Download",
+        active: true,
+        class: "downloadCurrent",
+        handler: this.downloadCurrent,
       },
       {
         title: "Duplicate",
@@ -97,6 +111,16 @@ export default class UserInterface {
       canvas.setActiveObject(cloned);
       canvas.requestRenderAll();
     });
+  }
+
+  saveBackup() {
+    downloadZip();
+  }
+
+  async downloadCurrent() {
+    const file = canvas.getActiveObject().file;
+    const fileBlob = await imageToBlob(file.imageElement);
+    downloadFile(fileBlob, "testSave.png", "image/png");
   }
 
   undo() {
