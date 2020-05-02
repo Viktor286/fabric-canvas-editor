@@ -1,4 +1,9 @@
-import { downloadFile, imageToBlob, downloadZip } from "./functions.js";
+import {
+  downloadFileToClient,
+  imageToBlob,
+  saveProjectFile,
+  readProjectFile,
+} from "./functions.js";
 
 export default class UserInterface {
   constructor() {
@@ -10,6 +15,12 @@ export default class UserInterface {
         active: true,
         class: "getObjects",
         handler: this.getObjects,
+      },
+      {
+        title: "Open",
+        active: true,
+        class: "openFile",
+        handler: this.openFile,
       },
       {
         title: "Backup",
@@ -113,14 +124,19 @@ export default class UserInterface {
     });
   }
 
+  openFile = () => {
+    this.zipInput.click();
+  };
+
   saveBackup() {
-    downloadZip();
+    // TODO: remove global canvas usage
+    saveProjectFile(canvas);
   }
 
   async downloadCurrent() {
     const file = canvas.getActiveObject().file;
     const fileBlob = await imageToBlob(file.imageElement);
-    downloadFile(fileBlob, "testSave.png", "image/png");
+    downloadFileToClient(fileBlob, "testSave.png", "image/png");
   }
 
   undo() {
@@ -160,6 +176,12 @@ export default class UserInterface {
   }
 
   initUserInterface() {
+    // Build required DOM elements
+    this.zipInput = document.createElement("input");
+    this.zipInput.accept = ".flow";
+    this.zipInput.type = "file";
+    this.zipInput.addEventListener("change", readProjectFile);
+
     // "Button - click" type of UI
     const uiPanelContainerElm = document.querySelector(this.uiPanelContainer);
     this.uiClickElements.forEach((uiObj) => {

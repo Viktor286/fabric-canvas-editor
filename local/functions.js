@@ -1,12 +1,12 @@
 // window, canvas, localforage
-export function saveFileToBrowser(blobFile) {
+
+export function saveFileIntoBrowserStore(fileName, blobFile) {
   localforage
-    .setItem("photo", blobFile)
+    .setItem(fileName, blobFile)
     .then(function (image) {
       console.log("File saved In Browser ", image);
     })
     .catch(function (err) {
-      // This code runs if there were any errors
       console.log(err);
     });
 }
@@ -48,6 +48,7 @@ export async function retrieveImageFromClipboardAsBlob(e) {
   }
 }
 
+// TODO: remove canvas global usage
 export function addImageFileToCanvas(blobImageFile, options = {}) {
   // File as HTMLImageElement pipeline
   const imageObjectURL = window.URL.createObjectURL(blobImageFile);
@@ -75,7 +76,7 @@ export function addImageFileToCanvas(blobImageFile, options = {}) {
   };
 }
 
-export function downloadFile(data, filename, type) {
+export function downloadFileToClient(data, filename, type) {
   const file = new Blob([data], { type: type });
   const a = document.createElement("a");
   const url = URL.createObjectURL(file);
@@ -112,13 +113,7 @@ export function imageToBlob(HTMLImageElement) {
   });
 }
 
-export async function downloadZip() {
-  // JSZip
-  // https://stuk.github.io/jszip/documentation/examples.html
-
-  // Read a zip file
-  // https://stuk.github.io/jszip/documentation/howto/read_zip.html
-
+export async function saveProjectFile(canvas) {
   const zip = new JSZip();
   const appStateBackupJSON = JSON.stringify(canvas);
 
@@ -126,7 +121,10 @@ export async function downloadZip() {
 
   const file = canvas.getActiveObject().file;
   const testImageBlob = await imageToBlob(file.imageElement);
-  zip.file(`images/${file.hash}.png`, testImageBlob);
+  zip.file(`images/${file.hash}.png`, testImageBlob, {
+    binary: true,
+    type: "blob",
+  });
 
   zip
     .generateAsync({
@@ -135,7 +133,26 @@ export async function downloadZip() {
       platform: "UNIX",
     })
     .then(function (content) {
-      console.log("downloadFile");
-      downloadFile(content, "screenflow-project.zip", "application/zip");
+      downloadFileToClient(content, "project.flow", "application/zip");
     });
+}
+
+export async function readProjectFile(event) {
+  const file = event.target.files[0];
+
+  if (!file || file.size < 100) {
+    // Todo: implement public error pipeline
+    console.log("Project file doesn't seem to be valid");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const projectFile = new JSZip();
+    projectFile.loadAsync(e.target.result).then((project) => {
+      console.log("!!! Opened project", project.files);
+    });
+  };
+
+  reader.readAsBinaryString(file);
 }
