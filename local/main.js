@@ -1,39 +1,34 @@
 // window, canvas, localforage
-import {
-  retrieveImageFromClipboardAsBlob,
-  addImageFileToCanvas,
-} from "./functions.js";
+import FabricBridge from './interfaces/FabricBridge.js';
+import BrowserStore from './interfaces/BrowserStore.js';
 
-import UserInterface from "./UserInterface.js";
+import UserControls from './UserControls.js';
 
-localforage.setDriver(localforage.INDEXEDDB);
+window.canvas = new fabric.Canvas('canvas');
 
-// Is it possible to save whole thing as html?
+const fabricBridge = new FabricBridge();
+const browserStore = new BrowserStore();
+
+// Is it possible to save whole DOM images collection as html?
 // AssetManager -- controller between IndexDB and Backup save/restore
 
 // TODO: 1. Need a DatalessJSON with AssetLoader from localDB (from remote server in perspective)
-
 // TODO: 2. Need an AssetManager which can backup "board" as board.zip -> Canvas.json + files
 
-// We can extend fabric.Image object with
-// (md5)hash "b9e739a2ad26d3a6bdcfdad8375eda4e" which will be key for localDB and filename for Backup/server
-// const newBlob = await imageToBlob(canvas.item(2)._originalElement);
-
 // Post-MVP, optimization:
-// next step will be to compress png blobs
+// next step will be to compress png blobs for BrowserStore
 
 async function main() {
-  const userInterface = new UserInterface();
+  const userInterface = new UserControls(fabricBridge);
 
-  const keys = await localforage.keys();
-
-  console.log("localforage keys is: ", keys);
+  browserStore.logKeys();
 
   // Test to load image from IndexDB and add it to canvas
   try {
-    const blobFile = await localforage.getItem("photo");
-    console.log("blobFile from indexdb", blobFile);
-    addImageFileToCanvas(blobFile, {
+    const blobFile = await localforage.getItem('photo');
+    console.log('blobFile from indexdb', blobFile);
+
+    await fabricBridge.addImageBlobToCanvas(blobFile, {
       left: 54,
       top: 233,
       scaleX: 0.32,
@@ -44,44 +39,14 @@ async function main() {
   }
 }
 
-main().then(() => console.log("main initiated"));
+main().then(() => console.log('main initiated'));
 
-window.addEventListener(
-  "paste",
-  function (e) {
-    console.log("paste event ", e);
-
-    if (e.clipboardData === false) {
-      return;
-    }
-
-    retrieveImageFromClipboardAsBlob(e);
-  },
-  false
+canvas.add(
+  new fabric.Rect({
+    top: 100,
+    left: 100,
+    width: 60,
+    height: 70,
+    fill: 'red',
+  }),
 );
-
-// Global functions for test
-
-function ejectCanvasToPage(canvasElement) {
-  canvasElement.toBlob((blob) => {
-    const imageObjectURL = window.URL.createObjectURL(blob);
-    const imageElement = new Image();
-    imageElement.setAttribute("src", imageObjectURL);
-    imageElement.onload = () => {
-      document.body.appendChild(imageElement);
-    };
-  });
-}
-
-function ejectBlobToPage(blob) {
-  const imageObjectURL = window.URL.createObjectURL(blob);
-  const imageElement = new Image();
-  imageElement.setAttribute("src", imageObjectURL);
-  imageElement.onload = () => {
-    document.body.appendChild(imageElement);
-  };
-}
-
-function ejectImgToPage(img) {
-  document.body.appendChild(img);
-}
