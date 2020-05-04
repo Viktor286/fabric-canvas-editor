@@ -12,8 +12,11 @@ const browserStore = new BrowserStore();
 // Is it possible to save whole DOM images collection as html?
 // AssetManager -- controller between IndexDB and Backup save/restore
 
-// TODO: 1. Need a DatalessJSON with AssetLoader from localDB (from remote server in perspective)
-// TODO: 2. Need an AssetManager which can backup "board" as board.zip -> Canvas.json + files
+// TODO: 1. ProjectManager/ProjectLoader (From file, browserStore, remote server)
+// TODO: 2. AssetManager/AssetLoader (From file, browserStore, remote server)
+
+// TODO: 0. Setup support fabricImage.file object
+// Add project title(wire to filename?) and id to manage opening and cache of projects
 
 // Post-MVP, optimization:
 // next step will be to compress png blobs for BrowserStore

@@ -9,10 +9,10 @@ export default class UserControls {
 
     this.uiClickElements = [
       {
-        title: 'Log state',
+        title: 'Save',
         active: true,
-        class: 'getObjects',
-        handler: this.getObjects,
+        class: 'saveProject',
+        handler: this.saveProject,
       },
       {
         title: 'Open',
@@ -21,16 +21,10 @@ export default class UserControls {
         handler: this.openFile,
       },
       {
-        title: 'Backup',
+        title: 'Log state',
         active: true,
-        class: 'saveBackup',
-        handler: this.saveBackup,
-      },
-      {
-        title: 'Download',
-        active: true,
-        class: 'downloadCurrent',
-        handler: this.downloadCurrent,
+        class: 'getObjects',
+        handler: this.getObjects,
       },
       {
         title: 'Duplicate',
@@ -43,6 +37,12 @@ export default class UserControls {
         active: false,
         class: 'copyCurrent',
         handler: this.copyCurrent,
+      },
+      {
+        title: 'Download',
+        active: true,
+        class: 'downloadCurrent',
+        handler: this.downloadCurrent,
       },
       {
         title: 'Undo',
@@ -166,7 +166,7 @@ export default class UserControls {
     this.projectFileInput.click();
   };
 
-  saveBackup() {
+  saveProject() {
     // TODO: remove global canvas usage
     Project.saveProjectFile(canvas).then((data) => {
       console.log('saveProjectFile finished', data);
