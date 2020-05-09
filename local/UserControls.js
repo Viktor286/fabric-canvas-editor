@@ -128,7 +128,8 @@ export default class UserControls {
         const imageBlob = await FilesIO.retrieveImageFromClipboardAsBlob(pasteEvent);
 
         this.fabricBridge.addImageBlobToCanvas(imageBlob).then(() => {
-          console.log('imageBlob pasted');
+          // TODO: make UI notification interface for that
+          // console.log('imageBlob pasted');
         });
       },
       false,

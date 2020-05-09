@@ -1,4 +1,9 @@
 export default class FilesIO {
+  static async getImageHash(blob) {
+    const bufferSample = await blob.slice(0, 512).arrayBuffer();
+    return SparkMD5.ArrayBuffer.hash(bufferSample);
+  }
+
   static createProjectFileInput() {
     const projectFileInput = document.createElement('input');
     projectFileInput.accept = '.flow';

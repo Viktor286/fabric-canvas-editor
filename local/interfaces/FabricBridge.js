@@ -19,8 +19,10 @@ export default class FabricBridge {
       imageBlob = await FilesIO.getBlobFromImageURL(imageElement);
     }
 
+    const hash = await FilesIO.getImageHash(imageBlob);
+
     return {
-      hash: md5(imageBlob),
+      hash,
       size: imageBlob.size,
       type: imageBlob.type,
       blobUrlStore: imageElement.src,
