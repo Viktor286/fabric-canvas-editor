@@ -61,20 +61,35 @@ export default class Project {
   }
 
   static async buildProjectFile(canvas) {
-    const projectFile = new JSZip();
-    const appStateBackupJSON = JSON.stringify(canvas);
+    const projectArchive = new JSZip();
+    const appStateBackup = FabricBridge.getFabricAppState();
 
-    projectFile.file('application.json', appStateBackupJSON);
+    projectArchive.file('application.json', JSON.stringify(appStateBackup));
 
-    const file = canvas.getActiveObject().file;
-    const testImageBlob = await FilesIO.getBlobFromImageURL(file.imageElement);
+    // Get image files from app store
+    const projectImages = appStateBackup.objects.filter((e) => e.type === 'image');
 
-    projectFile.file(`images/${file.hash}.png`, testImageBlob, {
-      binary: true,
-      type: 'blob',
+    const asyncImgBlobs = projectImages.map(
+      (obj) =>
+        new Promise((resolve) => {
+          FilesIO.getBlobFromImageURL(obj.file.imageElement).then((blob) => {
+            obj.file.blob = blob;
+            resolve(obj.file);
+          });
+        }),
+    );
+
+    const projectImagesReady = await Promise.all(asyncImgBlobs);
+
+    // Save files into projectArchive
+    projectImagesReady.forEach((imageObj) => {
+      projectArchive.file(`images/${imageObj.hash}.png`, imageObj.blob, {
+        binary: true,
+        type: 'blob',
+      });
     });
 
-    return projectFile;
+    return projectArchive;
   }
 
   static async saveProjectFile(canvas) {

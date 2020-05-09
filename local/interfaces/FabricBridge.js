@@ -27,4 +27,9 @@ export default class FabricBridge {
       imageElement,
     };
   }
+
+  static getFabricAppState() {
+    // return canvas.toJSON(['file']);
+    return canvas.toObject(['file']);
+  }
 }
