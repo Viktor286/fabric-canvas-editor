@@ -18,6 +18,17 @@ const browserStore = new BrowserStore();
 // TODO: 0. Setup support fabricImage.file object
 // Add project title(wire to filename?) and id to manage opening and cache of projects
 
+// toObject --  Returns object representation of an instance
+// include param into object representation temp1.toObject(['file'])
+
+// on a class level there is "stateProperties" field that keep config for exporting props
+// src\shapes\image.class.js:stateProperties
+// TODO: looks like we need to extend image class in the FabricBridge
+
+// if we need to rebuil several objects on canvas, it good to turn off re-render after each position
+// canvas.renderOnAddRemove=false
+//github.com/fabricjs/fabric.js/wiki/Optimizing-performance#canvasrenderonaddremovefalse-when-adding-many-objects
+
 // Post-MVP, optimization:
 // next step will be to compress png blobs for BrowserStore
 

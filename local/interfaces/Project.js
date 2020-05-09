@@ -1,4 +1,5 @@
 import FilesIO from './FilesIO.js';
+import FabricBridge from './FabricBridge.js';
 
 export default class Project {
   static async loadProjectFromFile(projectFile) {
@@ -7,30 +8,50 @@ export default class Project {
     //  then get image blob links, replace them in JSON
     //  then populate fabric.Canvas#loadFromJSON
 
-    // const imageElement = await FilesIO.saveImageToBlobStore(imageBlob);
-
+    // Async read files from project file
+    let asyncRead = [];
     projectFile.forEach((relativePath, entry) => {
-      console.log(entry); // .asText() .asBinary() .asArrayBuffer()
-
       // At first, handle images, if not in images, test on .json
       if (entry.name.startsWith('images')) {
-        const filename = entry.name.slice(7);
+        const fileName = entry.name.slice(7);
+        const hash = fileName.slice(0, fileName.lastIndexOf('.'));
+        const ext = fileName.substring(fileName.lastIndexOf('.') + 1);
 
-        entry.async('arraybuffer').then((arrayBuffer) => {
-          if (arrayBuffer.byteLength > 100) {
-            const imageBlob = new Blob([arrayBuffer], { type: 'image/png' });
-            console.log('imageBlob', filename, imageBlob);
-          }
-        });
+        let type = undefined;
+        if (ext === 'png') type = 'png';
+        if (ext === 'gif') type = 'gif';
+        if (ext === 'svg') type = 'svg+xml';
+        if (ext === 'jpeg' || ext === 'jpg') type = 'jpeg';
+
+        asyncRead.push(
+          entry.async('arraybuffer').then(async (arrayBuffer) => {
+            if (arrayBuffer.byteLength > 100) {
+              const imageBlob = new Blob([arrayBuffer], { type: `image/${type}` });
+              // todo: should we check saved hash to match uploaded hash? probably not...
+              // Save image to Blob Store right away
+              const imageElement = await FilesIO.saveImageToBlobStore(imageBlob);
+              // Return finalized ImageFileData object
+              return await FabricBridge.constructImageFileData(imageElement, imageBlob);
+            }
+          }),
+        );
       } else {
         // Handle application.json file
-        if (entry.name.endsWith('.json')) {
-          entry.async('string').then((applicationJson) => {
-            console.log('applicationJson', applicationJson);
-          });
+        if (entry.name === 'application.json') {
+          asyncRead.push(
+            entry.async('string').then((appJsonStr) => ({
+              file: 'application',
+              data: JSON.parse(appJsonStr),
+              type: 'json',
+            })),
+          );
         }
       }
     });
+
+    const results = await Promise.all(asyncRead);
+    console.log('loadProjectFromFile results', results);
+    // todo: change blobUrlStore in assets of appStore by hash match
   }
 
   static loadProjectFromCache() {

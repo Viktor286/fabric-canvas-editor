@@ -10,11 +10,11 @@ export default class FabricBridge {
     const imageElement = await FilesIO.saveImageToBlobStore(imageBlob);
 
     const fabricImage = new this.fabricObject.Image(imageElement, options);
-    fabricImage.file = await this.constructImageFileData(imageElement, imageBlob);
+    fabricImage.file = await FabricBridge.constructImageFileData(imageElement, imageBlob);
     this.fabricCanvas.add(fabricImage);
   }
 
-  async constructImageFileData(imageElement, imageBlob) {
+  static async constructImageFileData(imageElement, imageBlob) {
     if (!imageBlob) {
       imageBlob = await FilesIO.getBlobFromImageURL(imageElement);
     }
