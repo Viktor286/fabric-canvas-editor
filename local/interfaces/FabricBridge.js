@@ -31,7 +31,24 @@ export default class FabricBridge {
   }
 
   static getFabricAppState() {
-    // return canvas.toJSON(['file']);
+    // Minimal field set
+    // const exportFields = [
+    //   'aCoords',
+    //   'oCoords',
+    //   'top',
+    //   'left',
+    //   'height',
+    //   'width',
+    //   'translateX',
+    //   'translateY',
+    //   'scaleX',
+    //   'scaleY',
+    //   'file',
+    //   'filters',
+    //   'stroke',
+    //   'src',
+    // ];
     return canvas.toObject(['file']);
+    // return canvas.toJSON(['file']);
   }
 }

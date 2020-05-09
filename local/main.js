@@ -5,27 +5,12 @@ import BrowserStore from './interfaces/BrowserStore.js';
 import UserControls from './UserControls.js';
 
 window.canvas = new fabric.Canvas('canvas');
+// window.canvas.includeDefaultValues = false;
 
 const fabricBridge = new FabricBridge();
 const browserStore = new BrowserStore();
 
-// Is it possible to save whole DOM images collection as html?
-// AssetManager -- controller between IndexDB and Backup save/restore
-
-// TODO: 1. ProjectManager/ProjectLoader (From file, browserStore, remote server)
-// TODO: 2. AssetManager/AssetLoader (From file, browserStore, remote server)
-
-// TODO: 0. Setup support fabricImage.file object
-// Add project title(wire to filename?) and id to manage opening and cache of projects
-
-// toObject --  Returns object representation of an instance
-// include param into object representation temp1.toObject(['file'])
-
-// on a class level there is "stateProperties" field that keep config for exporting props
-// src\shapes\image.class.js:stateProperties
-// TODO: looks like we need to extend image class in the FabricBridge
-
-// if we need to rebuil several objects on canvas, it good to turn off re-render after each position
+// if we need to rebuild several objects on canvas, it good to turn off re-render after each position
 // canvas.renderOnAddRemove=false
 //github.com/fabricjs/fabric.js/wiki/Optimizing-performance#canvasrenderonaddremovefalse-when-adding-many-objects
 

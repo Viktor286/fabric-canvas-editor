@@ -3,16 +3,11 @@ import FabricBridge from './FabricBridge.js';
 
 export default class Project {
   static async loadProjectFromFile(projectFile) {
-    // from file, all sources will be loaded
-    // TODO: try to load all image files into Blob Store,
-    //  then get image blob links, replace them in JSON
-    //  then populate fabric.Canvas#loadFromJSON
-
     // Async read files from project file
-    let asyncRead = [];
+    let asyncProjectFilesRead = [];
     projectFile.forEach((relativePath, entry) => {
       // At first, handle images, if not in images, test on .json
-      if (entry.name.startsWith('images')) {
+      if (entry.name.startsWith('images') && !entry.dir) {
         const fileName = entry.name.slice(7);
         const hash = fileName.slice(0, fileName.lastIndexOf('.'));
         const ext = fileName.substring(fileName.lastIndexOf('.') + 1);
@@ -23,7 +18,7 @@ export default class Project {
         if (ext === 'svg') type = 'svg+xml';
         if (ext === 'jpeg' || ext === 'jpg') type = 'jpeg';
 
-        asyncRead.push(
+        asyncProjectFilesRead.push(
           entry.async('arraybuffer').then(async (arrayBuffer) => {
             if (arrayBuffer.byteLength > 100) {
               const imageBlob = new Blob([arrayBuffer], { type: `image/${type}` });
@@ -31,6 +26,7 @@ export default class Project {
               // Save image to Blob Store right away
               const imageElement = await FilesIO.saveImageToBlobStore(imageBlob);
               // Return finalized ImageFileData object
+              console.log('[progress] saved imageElement', imageElement);
               return await FabricBridge.constructImageFileData(imageElement, imageBlob);
             }
           }),
@@ -38,7 +34,7 @@ export default class Project {
       } else {
         // Handle application.json file
         if (entry.name === 'application.json') {
-          asyncRead.push(
+          asyncProjectFilesRead.push(
             entry.async('string').then((appJsonStr) => ({
               file: 'application',
               data: JSON.parse(appJsonStr),
@@ -49,9 +45,23 @@ export default class Project {
       }
     });
 
-    const results = await Promise.all(asyncRead);
-    console.log('loadProjectFromFile results', results);
-    // todo: change blobUrlStore in assets of appStore by hash match
+    const projectFiles = await Promise.all(asyncProjectFilesRead);
+    console.log('[progress] All projectFiles loaded into Blob Store.', projectFiles);
+
+    const appState = projectFiles.find((e) => e.file === 'application' && e.type === 'json').data;
+
+    appState.objects.forEach((e) => {
+      if (e.type === 'image') {
+        const correspondingLoadedFile = projectFiles.find((loaded) => loaded.hash === e.file.hash);
+        e.file = correspondingLoadedFile;
+        e.src = correspondingLoadedFile.blobUrlStore;
+      }
+    });
+
+    console.log('[success] Loading new project into application', appState);
+
+    // load application.json with fabric.Canvas#loadFromJSON
+    canvas.loadFromJSON(appState);
   }
 
   static loadProjectFromCache() {
@@ -60,14 +70,14 @@ export default class Project {
     Project.loadProjectFromFile(projectFile);
   }
 
-  static async buildProjectFile(canvas) {
+  static async buildProjectFile() {
     const projectArchive = new JSZip();
-    const appStateBackup = FabricBridge.getFabricAppState();
+    const appState = FabricBridge.getFabricAppState();
 
-    projectArchive.file('application.json', JSON.stringify(appStateBackup));
+    projectArchive.file('application.json', JSON.stringify(appState));
 
     // Get image files from app store
-    const projectImages = appStateBackup.objects.filter((e) => e.type === 'image');
+    const projectImages = appState.objects.filter((e) => e.type === 'image');
 
     const asyncImgBlobs = projectImages.map(
       (obj) =>
@@ -94,10 +104,12 @@ export default class Project {
 
   static async saveProjectFile(canvas) {
     const projectFile = await Project.buildProjectFile(canvas);
+    console.log('projectFile built', projectFile);
+    // compression: STORE|DEFLATE
     projectFile
       .generateAsync({
         type: 'blob',
-        compression: 'DEFLATE',
+        compression: 'STORE',
         compressionOptions: {
           level: 9,
         },
