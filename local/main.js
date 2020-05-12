@@ -6,6 +6,24 @@ import UserControls from './UserControls.js';
 
 window.canvas = new fabric.Canvas('canvas');
 // window.canvas.includeDefaultValues = false;
+fabric.Object.prototype.transparentCorners = false;
+fabric.Object.prototype.cornerColor = 'white';
+fabric.Object.prototype.cornerStrokeColor = '#5f9ae2';
+fabric.Object.prototype.cornerStyle = 'circle';
+fabric.Object.prototype.borderScaleFactor = 1;
+fabric.Object.prototype.cornerSize = 10;
+fabric.Object.prototype.hasRotatingPoint = false;
+fabric.Image.prototype._controlsVisibility = {
+  bl: true,
+  br: true,
+  mb: false,
+  ml: false,
+  mr: false,
+  mt: false,
+  mtr: true,
+  tl: true,
+  tr: true,
+};
 
 const fabricBridge = new FabricBridge();
 const browserStore = new BrowserStore();
