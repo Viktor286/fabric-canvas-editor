@@ -27,7 +27,19 @@ export default class UserControls {
         handler: this.getObjects,
       },
       {
-        title: 'Duplicate',
+        title: 'Zoom In',
+        active: true,
+        class: 'zoomIn',
+        handler: this.zoomIn,
+      },
+      {
+        title: 'Zoom Out',
+        active: true,
+        class: 'zoomOut',
+        handler: this.zoomOut,
+      },
+      {
+        title: 'Duplicate*',
         active: true,
         class: 'duplicateCurrent',
         handler: this.duplicateCurrent,
@@ -134,6 +146,34 @@ export default class UserControls {
       },
       false,
     );
+  }
+
+  zoomIn() {
+    // canvas.zoomToPoint({x: 54, y:223}, 1)
+    // canvas.zoomToPoint({x:0, y:0}, 2)
+    var zoom = { level: canvas.getZoom() };
+    gsap.to(zoom, {
+      duration: 0.6,
+      ease: 'power3.out', // sine.inOut, expo.out
+      level: canvas.getZoom() + 0.2,
+      onUpdate: function () {
+        canvas.setZoom(zoom.level);
+        console.log(zoom.level); //logs the value on each update.
+      },
+    });
+  }
+
+  zoomOut() {
+    var zoom = { level: canvas.getZoom() };
+    gsap.to(zoom, {
+      duration: 0.6,
+      ease: 'power3.out', // sine.inOut
+      level: canvas.getZoom() - 0.2,
+      onUpdate: function () {
+        canvas.setZoom(zoom.level);
+        console.log(zoom.level); //logs the value on each update.
+      },
+    });
   }
 
   duplicateCurrent() {
