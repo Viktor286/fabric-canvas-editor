@@ -148,6 +148,17 @@ export default class UserControls {
       },
       false,
     );
+
+    window.document.body.addEventListener('drop', async (ev) => {
+      ev.preventDefault();
+      const imageBlobArr = await FilesIO.retrieveImageOnDragDrop(ev);
+      imageBlobArr.forEach((imageBlob, idx) => {
+        this.fabricBridge.addImageBlobToCanvas(imageBlob).then(() => {
+          // TODO: make UI notification interface for that
+          // console.log('imageBlob pasted');
+        });
+      });
+    });
   }
 
   zoomIn = () => {
