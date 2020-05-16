@@ -1,11 +1,13 @@
 import FilesIO from './interfaces/FilesIO.js';
 import Project from './interfaces/Project.js';
+import BoardCamera from './interfaces/BoardCamera.js';
 
 export default class UserControls {
   constructor(fabricBridge) {
     this.fabricBridge = fabricBridge;
-
     this.uiPanelContainer = 'div.uiPanel';
+
+    this.boardCamera = new BoardCamera();
 
     this.uiClickElements = [
       {
@@ -148,33 +150,13 @@ export default class UserControls {
     );
   }
 
-  zoomIn() {
-    // canvas.zoomToPoint({x: 54, y:223}, 1)
-    // canvas.zoomToPoint({x:0, y:0}, 2)
-    var zoom = { level: canvas.getZoom() };
-    gsap.to(zoom, {
-      duration: 0.6,
-      ease: 'power3.out', // sine.inOut, expo.out
-      level: canvas.getZoom() + 0.2,
-      onUpdate: function () {
-        canvas.setZoom(zoom.level);
-        console.log(zoom.level); //logs the value on each update.
-      },
-    });
-  }
+  zoomIn = () => {
+    this.boardCamera.zoomIn();
+  };
 
-  zoomOut() {
-    var zoom = { level: canvas.getZoom() };
-    gsap.to(zoom, {
-      duration: 0.6,
-      ease: 'power3.out', // sine.inOut
-      level: canvas.getZoom() - 0.2,
-      onUpdate: function () {
-        canvas.setZoom(zoom.level);
-        console.log(zoom.level); //logs the value on each update.
-      },
-    });
-  }
+  zoomOut = () => {
+    this.boardCamera.zoomOut();
+  };
 
   duplicateCurrent() {
     canvas.getActiveObject().clone(function (cloned) {
