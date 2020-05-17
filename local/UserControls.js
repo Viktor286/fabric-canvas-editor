@@ -171,6 +171,17 @@ export default class UserControls {
         });
       });
     });
+
+    window.document.body.addEventListener('click', (e) => {
+      // getMouseCoords
+      // http://fabricjs.com/docs/fabric.Canvas.html#getPointer
+      console.log(
+        `Relative Coords (ignoring zoom): `,
+        canvas.getPointer(e, true).x,
+        canvas.getPointer(e, true).y,
+      );
+      console.log(`Absolute Coords (with zoom): `, canvas.getPointer(e).x, canvas.getPointer(e).y);
+    });
   }
 
   zoomIn = () => {
@@ -186,7 +197,7 @@ export default class UserControls {
   };
 
   zoomToActiveObject = () => {
-    this.boardCamera.zoomToObject();
+    this.boardCamera.zoomToObject(canvas.getActiveObject());
   };
 
   duplicateCurrent() {
