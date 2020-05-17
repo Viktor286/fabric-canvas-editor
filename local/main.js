@@ -60,10 +60,10 @@ main().then(() => console.log('main initiated'));
 
 canvas.add(
   new fabric.Rect({
-    top: 100,
-    left: 100,
-    width: 60,
-    height: 70,
-    fill: 'red',
+    top: 0,
+    left: 0,
+    width: 100,
+    height: 100,
+    fill: '#333646',
   }),
 );

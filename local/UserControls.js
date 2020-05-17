@@ -41,6 +41,18 @@ export default class UserControls {
         handler: this.zoomOut,
       },
       {
+        title: 'Zoom 100%',
+        active: true,
+        class: 'zoom100',
+        handler: this.zoomReset,
+      },
+      {
+        title: 'Zoom To Active Object',
+        active: true,
+        class: 'zoomToActiveObject',
+        handler: this.zoomToActiveObject,
+      },
+      {
         title: 'Duplicate*',
         active: true,
         class: 'duplicateCurrent',
@@ -167,6 +179,14 @@ export default class UserControls {
 
   zoomOut = () => {
     this.boardCamera.zoomOut();
+  };
+
+  zoomReset = () => {
+    this.boardCamera.zoomReset();
+  };
+
+  zoomToActiveObject = () => {
+    this.boardCamera.zoomToObject();
   };
 
   duplicateCurrent() {
