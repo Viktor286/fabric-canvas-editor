@@ -175,12 +175,12 @@ export default class UserControls {
     window.document.body.addEventListener('click', (e) => {
       // getMouseCoords
       // http://fabricjs.com/docs/fabric.Canvas.html#getPointer
-      // console.log(
-      //   `Relative Coords (ignoring zoom): `,
-      //   canvas.getPointer(e, true).x,
-      //   canvas.getPointer(e, true).y,
-      // );
-      // console.log(`Absolute Coords (with zoom): `, canvas.getPointer(e).x, canvas.getPointer(e).y);
+      console.log(
+        `Relative Coords (ignoring zoom): `,
+        canvas.getPointer(e, true).x,
+        canvas.getPointer(e, true).y,
+      );
+      console.log(`Absolute Coords (with zoom): `, canvas.getPointer(e).x, canvas.getPointer(e).y);
     });
   }
 
@@ -211,12 +211,10 @@ export default class UserControls {
       });
 
       if (cloned.type === 'activeSelection') {
-        // active selection needs a reference to the canvas.
         cloned.canvas = canvas;
         cloned.forEachObject(function (obj) {
           canvas.add(obj);
         });
-        // this should solve the unselectability
         cloned.setCoords();
       } else {
         canvas.add(cloned);
@@ -234,7 +232,7 @@ export default class UserControls {
   saveProject() {
     // TODO: remove global canvas usage
     Project.saveProjectFile(canvas).then((data) => {
-      console.log('saveProjectFile finished', data);
+      // console.log('saveProjectFile finished', data);
     });
   }
 
@@ -245,11 +243,11 @@ export default class UserControls {
   }
 
   undo() {
-    alert('need to implement undo');
+    // alert('need to implement undo');
   }
 
   copyCurrent() {
-    alert('need to implement copyCurrent');
+    // alert('need to implement copyCurrent');
   }
 
   removeCurrent() {

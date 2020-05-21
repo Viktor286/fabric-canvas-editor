@@ -49,18 +49,11 @@ export default class FilesIO {
   }
 
   static async retrieveImageFromClipboardAsBlob(pasteEvent, onLoadImageFromClipboard) {
-    // General pipeline:
-    // clipboardData.items comes as DataTransferItemList
-    // dataTransferItem.getAsFile() -> File
-    // File -> ObjectURL
-    // ObjectURL placed into Image
-    // After Image.onload the image itself could be used by canvas
-
     const clipboardDataItems = pasteEvent.clipboardData.items;
 
     // In case of "dragged files" or "files from buffer"
     // "clipboardData.items" will be "DataTransferItemList"
-    // -- we can't see items of the list in console, the length will be 0
+    // looks like we can't see items of the list in console, the length will be 0
     // methods of "DataTransferItemList" is not well supported (Android, Mac)
     // https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItemList
     if (clipboardDataItems instanceof DataTransferItemList) {
@@ -86,23 +79,15 @@ export default class FilesIO {
 
   static async retrieveImageOnDragDrop(pasteEvent) {
     let asyncImageBlobArr = [];
-    let imageBlobArr = [];
     if (pasteEvent.dataTransfer.items) {
-      // Use DataTransferItemList interface to access the file(s)
-      console.log('pasteEvent.dataTransfer.items.length', pasteEvent.dataTransfer.items.length);
       for (var i = 0; i < pasteEvent.dataTransfer.items.length; i++) {
-        // If dropped items aren't files, reject them
-        console.log('pasteEvent.dataTransfer.items[i].kind', pasteEvent.dataTransfer.items[i].kind);
         if (pasteEvent.dataTransfer.items[i].kind === 'file') {
           const imageFile = pasteEvent.dataTransfer.items[i].getAsFile();
           asyncImageBlobArr.push(imageFile.arrayBuffer());
         }
       }
     } else {
-      // Use DataTransfer interface to access the file(s)
-      console.log('pasteEvent.dataTransfer.files.length', pasteEvent.dataTransfer.files.length);
       for (var i = 0; i < pasteEvent.dataTransfer.files.length; i++) {
-        // console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
         const imageFile = pasteEvent.dataTransfer.files[i].getAsFile();
         asyncImageBlobArr.push(imageFile.arrayBuffer());
       }

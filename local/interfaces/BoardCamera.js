@@ -73,7 +73,6 @@ export default class BoardCamera {
     // viewport and zoom lazy loading (object.visible=false -- Shapes outside canvas drawing area still take time to render)
     // Shapes outside canvas drawing area still take time to render
 
-    // test with jpegs?
     // gsap.ticker.fps(5);
     canvas.selection = false;
     canvas.skipTargetFind = true;

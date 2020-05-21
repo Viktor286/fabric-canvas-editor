@@ -22,7 +22,6 @@ export default class Project {
           entry.async('arraybuffer').then(async (arrayBuffer) => {
             if (arrayBuffer.byteLength > 100) {
               const imageBlob = new Blob([arrayBuffer], { type: `image/${type}` });
-              // todo: should we check saved hash to match uploaded hash? probably not...
               // Save image to Blob Store right away
               const imageElement = await FilesIO.saveImageToBlobStore(imageBlob);
               // Return finalized ImageFileData object
@@ -124,7 +123,6 @@ export default class Project {
     const file = event.target.files[0];
 
     if (!file || file.size < 100) {
-      // Todo: implement public error pipeline
       console.log("Project file doesn't seem to be valid");
       return;
     }
@@ -133,7 +131,6 @@ export default class Project {
     reader.onload = (e) => {
       const projectFile = new JSZip();
       projectFile.loadAsync(e.target.result).then((project) => {
-        console.log('!!! Opened project', project);
         Project.loadProjectFromFile(project);
       });
     };
