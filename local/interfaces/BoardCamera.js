@@ -59,7 +59,7 @@ export default class BoardCamera {
     this.moveCameraTo({ x: targetPoint.x, y: targetPoint.y }, zoomLevel);
   }
 
-  moveCameraTo(targetPoint = { x: 0, y: 0 }, targetZoom = 1, duration = 0.5, ease = 'power2.out') {
+  moveCameraTo(targetPoint = { x: 0, y: 0 }, targetZoom = 1, duration = 0.5, ease = 'power3.out') {
     let viewport = {
       zoomLevel: canvas.viewportTransform[0],
       x: canvas.viewportTransform[4],
@@ -68,7 +68,18 @@ export default class BoardCamera {
 
     this.animationInProgress = true;
 
-    // gsap.ticker.fps(30);
+    // optimization ways: turn of filtering during animation
+    // make image of the end frame and first (canvas.toDataURL("png");)
+    // viewport and zoom lazy loading (object.visible=false -- Shapes outside canvas drawing area still take time to render)
+    // Shapes outside canvas drawing area still take time to render
+
+    // test with jpegs?
+    // gsap.ticker.fps(5);
+    canvas.selection = false;
+    canvas.skipTargetFind = true;
+    // canvas.renderOnAddRemove = false;
+    // canvas.interactive = false;
+
     gsap.to(viewport, {
       duration,
       ease,
@@ -77,9 +88,15 @@ export default class BoardCamera {
       y: targetPoint.y,
       onUpdate: () => {
         canvas.setViewportTransform([viewport.zoomLevel, 0, 0, viewport.zoomLevel, viewport.x, viewport.y]);
+        // canvas.renderAll.bind(canvas);
       },
       onComplete: () => {
         this.animationInProgress = false;
+
+        canvas.selection = true;
+        canvas.skipTargetFind = false;
+        // canvas.renderOnAddRemove = true;
+        // canvas.interactive = true;
       },
     });
   }
@@ -141,37 +158,5 @@ export default class BoardCamera {
     const nextStep = this.suggestNextZoomStep(direction);
 
     return direction === 'in' ? currentZoomLevel + nextStep : currentZoomLevel - nextStep;
-  }
-
-  zoomController({ duration, direction, targetLevel, resetCoords = false }) {
-    return false;
-    if (!this.animationInProgress) {
-      let zoom = { level: canvas.getZoom() };
-
-      if (!targetLevel) {
-        targetLevel =
-          direction === 'in'
-            ? parseFloat((canvas.getZoom() + step).toFixed(2))
-            : parseFloat((canvas.getZoom() - step).toFixed(2));
-      }
-
-      // gsap.ticker.fps(30);
-      this.animationInProgress = true;
-      gsap.to(zoom, {
-        duration,
-        ease: 'power2.out', // sine.inOut
-        level: targetLevel,
-        onUpdate: () => {
-          if (resetCoords) {
-            canvas.zoomToPoint({ x: 0, y: 0 }, zoom.level);
-          } else {
-            canvas.setZoom(zoom.level);
-          }
-        },
-        onComplete: () => {
-          this.animationInProgress = false;
-        },
-      });
-    }
   }
 }

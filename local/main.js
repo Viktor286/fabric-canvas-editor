@@ -13,6 +13,7 @@ fabric.Object.prototype.cornerStyle = 'circle';
 fabric.Object.prototype.borderScaleFactor = 1;
 fabric.Object.prototype.cornerSize = 10;
 fabric.Object.prototype.hasRotatingPoint = false;
+// fabric.Image.prototype.minimumScaleTrigger = 0;
 fabric.Image.prototype._controlsVisibility = {
   bl: true,
   br: true,
