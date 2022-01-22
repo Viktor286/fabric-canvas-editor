@@ -1,3 +1,4 @@
+/* global SparkMD5 */
 export default class FilesIO {
   static async getImageHash(blob) {
     const bufferSample = await blob.slice(0, 1024).arrayBuffer();
@@ -80,14 +81,14 @@ export default class FilesIO {
   static async retrieveImageOnDragDrop(pasteEvent) {
     let asyncImageBlobArr = [];
     if (pasteEvent.dataTransfer.items) {
-      for (var i = 0; i < pasteEvent.dataTransfer.items.length; i++) {
+      for (let i = 0; i < pasteEvent.dataTransfer.items.length; i++) {
         if (pasteEvent.dataTransfer.items[i].kind === 'file') {
           const imageFile = pasteEvent.dataTransfer.items[i].getAsFile();
           asyncImageBlobArr.push(imageFile.arrayBuffer());
         }
       }
     } else {
-      for (var i = 0; i < pasteEvent.dataTransfer.files.length; i++) {
+      for (let i = 0; i < pasteEvent.dataTransfer.files.length; i++) {
         const imageFile = pasteEvent.dataTransfer.files[i].getAsFile();
         asyncImageBlobArr.push(imageFile.arrayBuffer());
       }

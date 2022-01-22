@@ -1,4 +1,4 @@
-// window, canvas, localforage
+/* global localforage, window, canvas, localforage */
 import FabricBridge from './interfaces/FabricBridge.js';
 import BrowserStore from './interfaces/BrowserStore.js';
 
@@ -31,7 +31,7 @@ const browserStore = new BrowserStore();
 
 async function main() {
   const userInterface = new UserControls(fabricBridge);
-  browserStore.logKeys();
+  await browserStore.logKeys();
 
   try {
     const blobFile = await localforage.getItem('photo');
@@ -47,4 +47,4 @@ async function main() {
   }
 }
 
-main().then(() => console.log('main initiated'));
+main().then(() => {});

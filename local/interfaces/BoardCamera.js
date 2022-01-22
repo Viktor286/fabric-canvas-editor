@@ -1,14 +1,5 @@
 export default class BoardCamera {
   constructor() {
-    // canvas.zoomToPoint({x: 54, y:223}, 1)
-    // canvas.zoomToPoint({x:0, y:0}, 2) -- not absolute ToPoint!!
-
-    // canvas.getVpCenter()
-    // canvas.vptCoords
-    // canvas.calcViewportBoundaries()
-    // canvas.setViewportTransform([1, 0, 0, 1, targetPoint.x, targetPoint.y]);
-    // canvas.zoomToPoint({ x: targetPoint.x, y: targetPoint.y }, zoomLevel);
-
     this.animationInProgress = false;
     canvas.moveCameraTo = this.moveCameraTo;
   }
@@ -56,10 +47,10 @@ export default class BoardCamera {
       y: -((targetObject.top + halfObjHeight) * zoomLevel) + canvas.height / 2,
     };
 
-    this.moveCameraTo({ x: targetPoint.x, y: targetPoint.y }, zoomLevel);
+    this.moveCameraTo({x: targetPoint.x, y: targetPoint.y}, zoomLevel);
   }
 
-  moveCameraTo(targetPoint = { x: 0, y: 0 }, targetZoom = 1, duration = 0.5, ease = 'power3.out') {
+  moveCameraTo(targetPoint = {x: 0, y: 0}, targetZoom = 1, duration = 0.5, ease = 'power3.out') {
     let viewport = {
       zoomLevel: canvas.viewportTransform[0],
       x: canvas.viewportTransform[4],
@@ -73,7 +64,6 @@ export default class BoardCamera {
     // viewport and zoom lazy loading (object.visible=false -- Shapes outside canvas drawing area still take time to render)
     // Shapes outside canvas drawing area still take time to render
 
-    // gsap.ticker.fps(5);
     canvas.selection = false;
     canvas.skipTargetFind = true;
     // canvas.renderOnAddRemove = false;
@@ -105,10 +95,8 @@ export default class BoardCamera {
 
     let step = 10;
 
-    if (currentZoomLevel > 200) {
-      if (direction === 'in') {
-        step = 0;
-      }
+    if (currentZoomLevel > 200 && direction === 'in') {
+      step = 0;
     }
 
     if (currentZoomLevel < 200) {
@@ -143,10 +131,8 @@ export default class BoardCamera {
       step = 0.02;
     }
 
-    if (currentZoomLevel <= 0.05) {
-      if (direction === 'out') {
-        step = 0;
-      }
+    if (currentZoomLevel <= 0.05 && direction === 'out') {
+      step = 0;
     }
 
     return step;
@@ -155,7 +141,6 @@ export default class BoardCamera {
   suggestNextZoomLevel(direction) {
     const currentZoomLevel = canvas.getZoom();
     const nextStep = this.suggestNextZoomStep(direction);
-
     return direction === 'in' ? currentZoomLevel + nextStep : currentZoomLevel - nextStep;
   }
 }

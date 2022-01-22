@@ -1,3 +1,4 @@
+/* global localforage */
 export default class BrowserStore {
   constructor() {
     localforage.setDriver(localforage.INDEXEDDB);

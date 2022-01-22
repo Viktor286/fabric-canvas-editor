@@ -103,7 +103,6 @@ export default class Project {
 
   static async saveProjectFile(canvas) {
     const projectFile = await Project.buildProjectFile(canvas);
-    console.log('projectFile built', projectFile);
     // compression: STORE|DEFLATE
     projectFile
       .generateAsync({
@@ -123,7 +122,7 @@ export default class Project {
     const file = event.target.files[0];
 
     if (!file || file.size < 100) {
-      console.log("Project file doesn't seem to be valid");
+      console.error("Project file doesn't seem to be valid");
       return;
     }
 
