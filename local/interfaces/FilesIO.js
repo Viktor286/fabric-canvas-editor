@@ -104,6 +104,7 @@ export default class FilesIO {
       const imageElement = new Image();
       imageElement.setAttribute('src', imageObjectURL);
       imageElement.onload = () => {
+        URL.revokeObjectURL(imageObjectURL);
         resolve(imageElement);
       };
     });
